@@ -3,10 +3,10 @@
 
  ReactDOMRe.renderToElementWithId(<Component2 greeting="Hello!" />, "index2");
  */
-let myMap = Js.Dict.empty();
-Js.Dict.set(myMap, "color", "green");
+let extensionData = Chrome.storageData(~color="green");
+
 Chrome.Runtime.OnInstalled.addListener(() =>
-  Chrome.Storage.Sync.set(myMap, () => Js.log(myMap))
+  Chrome.Storage.Sync.set(extensionData, () => Js.log(extensionData))
 );
 
 let rules: Js.Dict.t(array(Chrome.DeclarativeContent.onPageChangedRule)) =
@@ -15,7 +15,9 @@ let rules: Js.Dict.t(array(Chrome.DeclarativeContent.onPageChangedRule)) =
 Js.Dict.set(
   rules,
   "conditions",
-  [|Chrome.DeclarativeContent.makeNewPageStateManager()|],
+  [|
+    Chrome.DeclarativeContent.makeNewPageStateManager("developer.chrome.com"),
+  |],
 );
 
 Js.Dict.set(

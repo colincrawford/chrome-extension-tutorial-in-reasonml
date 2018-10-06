@@ -1,3 +1,7 @@
+/* data model for data my extension is storing */
+[@bs.deriving abstract]
+type storageData = {color: string};
+
 module Runtime = {
   module OnInstalled = {
     [@bs.val] [@bs.scope ("chrome", "runtime", "onInstalled")]
@@ -8,25 +12,21 @@ module Runtime = {
 module Storage = {
   module Sync = {
     [@bs.val] [@bs.scope ("chrome", "storage", "sync")]
-    external set: (Js.Dict.t(string), unit => unit) => unit = "set";
+    external set: (storageData, unit => unit) => unit = "set";
 
     [@bs.val] [@bs.scope ("chrome", "storage", "sync")]
-    external get: (string, Js.Dict.t(string) => unit) => unit = "get";
+    external get: (string, storageData => unit) => unit = "get";
   };
 };
 
 module DeclarativeContent = {
-  type pageStateManager;
-  type showPageAction;
-  type onPageChangedRule =
-    | PageStateManager(pageStateManager)
-    | ShowPageAction(showPageAction);
+  type onPageChangedRule;
 
-  let makeNewPageStateManager: unit => onPageChangedRule = [%bs.raw
+  let makeNewPageStateManager: string => onPageChangedRule = [%bs.raw
     {|
-    function() {
+    function(hostEquals) {
       return new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: "developer.chrome.com"}
+        pageUrl: {hostEquals}
       });
     }
     |}
@@ -46,4 +46,15 @@ module DeclarativeContent = {
     external addRules: array(Js.Dict.t(array(onPageChangedRule))) => unit =
       "addRules";
   };
+};
+
+module Tabs = {
+  [@bs.deriving abstract]
+  type tab = {id: int};
+
+  [@bs.val] [@bs.scope ("chrome", "tabs")]
+  external query: (Js.Dict.t(bool), array(tab) => unit) => unit = "query";
+
+  [@bs.val] [@bs.scope ("chrome", "tabs")]
+  external executeScript: (int, Js.Dict.t(string)) => unit = "executeScript";
 };

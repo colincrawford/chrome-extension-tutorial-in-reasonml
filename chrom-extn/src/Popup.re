@@ -1,25 +1,36 @@
-type changeColor;
-let changeColor: changeColor = [%bs.raw
-  {| document.getElementById('changeColor') |}
-];
+let changeColor: Dom.element = Document.getElementById("changeColor");
 
-let updateChangeColor: (Js.Dict.t(string), changeColor) => unit = [%bs.raw
+let getChangeColorClickedValue: Dom.event => string = [%bs.raw
   {|
-  function(data, changeColor) {
-    changeColor.style.backgroundColor = data.color;
-    changeColor.setAttribute('value', data.color);
-    changeColor.onclick = function(element) {
-      let color = element.target.value;
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.executeScript(
-            tabs[0].id,
-            {code: 'document.body.style.backgroundColor = "' + color + '";'});
-      })
-    }
+  function(event) {
+    return event.target.value;
   }
-  |}
+|}
 ];
 
-Chrome.Storage.Sync.get("color", data =>
-  updateChangeColor(data, changeColor)
-);
+let handleChangeColorClicked: Dom.event => unit =
+  event => {
+    let clickedColor = getChangeColorClickedValue(event);
+    let queryOptions = Js.Dict.empty();
+    Js.Dict.set(queryOptions, "active", true);
+    Js.Dict.set(queryOptions, "currentWindow", true);
+    Chrome.Tabs.query(queryOptions, tabs =>
+      if (Array.length(tabs) > 0) {
+        let firstTabId = Chrome.Tabs.idGet(tabs[0]);
+        let scriptOptions = Js.Dict.empty();
+        Js.Dict.set(
+          scriptOptions,
+          "code",
+          "document.body.style.backgroundColor = '" ++ clickedColor ++ "';",
+        );
+        Chrome.Tabs.executeScript(firstTabId, scriptOptions);
+      }
+    );
+  };
+
+Chrome.Storage.Sync.get("color", data => {
+  let color = Chrome.colorGet(data);
+  Element.setStyle(changeColor, "backgroundColor", color);
+  Element.setAttribute(changeColor, "value", color);
+  Element.addEventListener(changeColor, "click", handleChangeColorClicked);
+});
