@@ -3,8 +3,9 @@
 
 var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
+var Element$ReactTemplate = require("./Element.bs.js");
 
-var page = ( document.getElementById('buttonDiv') );
+var page = document.getElementById("buttonDiv");
 
 var kButtonColors = /* array */[
   "#3aa757",
@@ -13,28 +14,26 @@ var kButtonColors = /* array */[
   "#4688f1"
 ];
 
-var setBackgroundColor = (
-    function(button, color) {
-      button.style.backgroundColor = color;
-    }
-  );
+function updateChromeStorageColor(color, _) {
+  chrome.storage.sync.set({
+        color: color
+      }, (function () {
+          console.log("color is " + color);
+          return /* () */0;
+        }));
+  return /* () */0;
+}
 
 $$Array.iter((function (color) {
-        var button = ( document.createElement('button') );
-        Curry._2(setBackgroundColor, button, color);
-        button.addEventListener("click", (function () {
-                var params = { };
-                params["color"] = color;
-                chrome.storage.sync.set(params, (function () {
-                        console.log("color is " + color);
-                        return /* () */0;
-                      }));
-                return /* () */0;
+        var button = document.createElement("button");
+        Curry._3(Element$ReactTemplate.setStyle, button, "backgroundColor", color);
+        Curry._3(Element$ReactTemplate.addEventListener, button, "click", (function (param) {
+                return updateChromeStorageColor(color, param);
               }));
-        return page.appendChild(button);
+        return Curry._2(Element$ReactTemplate.appendChild, page, button);
       }), kButtonColors);
 
 exports.page = page;
 exports.kButtonColors = kButtonColors;
-exports.setBackgroundColor = setBackgroundColor;
+exports.updateChromeStorageColor = updateChromeStorageColor;
 /* page Not a pure module */

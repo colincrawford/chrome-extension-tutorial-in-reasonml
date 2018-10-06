@@ -4,13 +4,13 @@
 var Curry = require("bs-platform/lib/js/curry.js");
 var Chrome$ReactTemplate = require("./Chrome.bs.js");
 
-var myMap = { };
-
-myMap["color"] = "green";
+var extensionData = {
+  color: "green"
+};
 
 chrome.runtime.onInstalled.addListener((function () {
-        chrome.storage.sync.set(myMap, (function () {
-                console.log(myMap);
+        chrome.storage.sync.set(extensionData, (function () {
+                console.log(extensionData);
                 return /* () */0;
               }));
         return /* () */0;
@@ -18,7 +18,7 @@ chrome.runtime.onInstalled.addListener((function () {
 
 var rules = { };
 
-rules["conditions"] = /* array */[Curry._1(Chrome$ReactTemplate.DeclarativeContent[/* makeNewPageStateManager */0], /* () */0)];
+rules["conditions"] = /* array */[Curry._1(Chrome$ReactTemplate.DeclarativeContent[/* makeNewPageStateManager */0], "developer.chrome.com")];
 
 rules["actions"] = /* array */[Curry._1(Chrome$ReactTemplate.DeclarativeContent[/* makeNewShowPageAction */1], /* () */0)];
 
@@ -29,7 +29,7 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, (function () {
         return /* () */0;
       }));
 
-exports.myMap = myMap;
+exports.extensionData = extensionData;
 exports.rules = rules;
 exports.rulesArr = rulesArr;
 /*  Not a pure module */

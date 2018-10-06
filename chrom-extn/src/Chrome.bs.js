@@ -11,9 +11,9 @@ var Sync = /* module */[];
 var Storage = /* module */[/* Sync */Sync];
 
 var makeNewPageStateManager = (
-    function() {
+    function(hostEquals) {
       return new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: "developer.chrome.com"}
+        pageUrl: {hostEquals}
       });
     }
     );
@@ -28,7 +28,10 @@ var DeclarativeContent = /* module */[
   /* OnPageChanged */OnPageChanged
 ];
 
+var Tabs = /* module */[];
+
 exports.Runtime = Runtime;
 exports.Storage = Storage;
 exports.DeclarativeContent = DeclarativeContent;
+exports.Tabs = Tabs;
 /* makeNewPageStateManager Not a pure module */

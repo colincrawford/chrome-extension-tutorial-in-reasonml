@@ -2,28 +2,44 @@
 'use strict';
 
 var Curry = require("bs-platform/lib/js/curry.js");
+var Caml_array = require("bs-platform/lib/js/caml_array.js");
+var Element$ReactTemplate = require("./Element.bs.js");
 
-var changeColor = ( document.getElementById('changeColor') );
+var changeColor = document.getElementById("changeColor");
 
-var updateChangeColor = (
-  function(data, changeColor) {
-    changeColor.style.backgroundColor = data.color;
-    changeColor.setAttribute('value', data.color);
-    changeColor.onclick = function(element) {
-      let color = element.target.value;
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-        chrome.tabs.executeScript(
-            tabs[0].id,
-            {code: 'document.body.style.backgroundColor = "' + color + '";'});
-      })
-    }
+var getChangeColorClickedValue = (
+  function(event) {
+    return event.target.value;
   }
-  );
+);
+
+function handleChangeColorClicked($$event) {
+  var clickedColor = Curry._1(getChangeColorClickedValue, $$event);
+  var queryOptions = { };
+  queryOptions["active"] = true;
+  queryOptions["currentWindow"] = true;
+  chrome.tabs.query(queryOptions, (function (tabs) {
+          if (tabs.length) {
+            var firstTabId = Caml_array.caml_array_get(tabs, 0).id;
+            var scriptOptions = { };
+            scriptOptions["code"] = "document.body.style.backgroundColor = '" + (clickedColor + "';");
+            chrome.tabs.executeScript(firstTabId, scriptOptions);
+            return /* () */0;
+          } else {
+            return 0;
+          }
+        }));
+  return /* () */0;
+}
 
 chrome.storage.sync.get("color", (function (data) {
-        return Curry._2(updateChangeColor, data, changeColor);
+        var color = data.color;
+        Curry._3(Element$ReactTemplate.setStyle, changeColor, "backgroundColor", color);
+        Curry._3(Element$ReactTemplate.setAttribute, changeColor, "value", color);
+        return Curry._3(Element$ReactTemplate.addEventListener, changeColor, "click", handleChangeColorClicked);
       }));
 
 exports.changeColor = changeColor;
-exports.updateChangeColor = updateChangeColor;
+exports.getChangeColorClickedValue = getChangeColorClickedValue;
+exports.handleChangeColorClicked = handleChangeColorClicked;
 /* changeColor Not a pure module */
