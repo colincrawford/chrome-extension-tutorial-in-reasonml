@@ -9,25 +9,20 @@ Chrome.Runtime.OnInstalled.addListener(() =>
   Chrome.Storage.Sync.set(extensionData, () => Js.log(extensionData))
 );
 
-let rules: Js.Dict.t(array(Chrome.DeclarativeContent.onPageChangedRule)) =
-  Js.Dict.empty();
+let pageUrl =
+  Chrome.DeclarativeContent.host(~hostEquals="developer.chrome.com");
 
-Js.Dict.set(
-  rules,
-  "conditions",
-  [|
-    Chrome.DeclarativeContent.makeNewPageStateManager("developer.chrome.com"),
-  |],
-);
+let pageStateMatcherParams = Chrome.DeclarativeContent.page(~pageUrl);
 
-Js.Dict.set(
-  rules,
-  "actions",
-  [|Chrome.DeclarativeContent.makeNewShowPageAction()|],
-);
-
-let rulesArr = [|rules|];
+let rules = [|
+  Chrome.DeclarativeContent.OnPageChanged.rule(
+    ~conditions=[|
+      Chrome.DeclarativeContent.pageStateMatcher(pageStateMatcherParams),
+    |],
+    ~actions=[|Chrome.DeclarativeContent.showPageAction()|],
+  ),
+|];
 
 Chrome.DeclarativeContent.OnPageChanged.removeRules(Js.undefined, () =>
-  Chrome.DeclarativeContent.OnPageChanged.addRules(rulesArr)
+  Chrome.DeclarativeContent.OnPageChanged.addRules(rules)
 );
