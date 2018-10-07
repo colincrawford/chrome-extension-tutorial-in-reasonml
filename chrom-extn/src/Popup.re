@@ -30,7 +30,9 @@ let handleChangeColorClicked: Dom.event => unit =
 
 Chrome.Storage.Sync.get("color", data => {
   let color = Chrome.colorGet(data);
-  Element.setStyle(changeColor, "backgroundColor", color);
-  Element.setAttribute(changeColor, "value", color);
-  Element.addEventListener(changeColor, "click", handleChangeColorClicked);
+  let _ =
+    Element.setStyle(changeColor, "backgroundColor", color)
+    ->Element.setAttribute("value", color)
+    ->Element.addEventListener("click", handleChangeColorClicked);
+  ();
 });
