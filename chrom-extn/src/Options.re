@@ -9,15 +9,11 @@ let updateChromeStorageColor: (string, Dom.event) => unit =
     );
 
 Array.iter(
-  color => {
-    let button = Document.createElement("button");
-    Element.setStyle(button, "backgroundColor", color);
-    Element.addEventListener(
-      button,
-      "click",
-      updateChromeStorageColor(color),
-    );
-    Element.appendChild(page, button);
-  },
+  color =>
+    Document.createElement("button")
+    ->Element.setStyle("backgroundColor", color)
+    ->Element.addEventListener("click", updateChromeStorageColor(color))
+    |> Element.appendChild(page)
+    |> (_ => ()),
   kButtonColors,
 );
