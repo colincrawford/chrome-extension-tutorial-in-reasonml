@@ -5,40 +5,45 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Element$ChromeExtn = require("./Element.bs.js");
 
-var changeColor = document.getElementById("changeColor");
-
 var getChangeColorClickedValue = (
   function(event) {
     return event.target.value;
   }
 );
 
+function setCurrentActiveWindowColor(color, tabs) {
+  if (tabs.length) {
+    var firstTabId = Caml_array.caml_array_get(tabs, 0).id;
+    var code = "document.body.style.backgroundColor = '" + (color + "';");
+    var scriptOptions = {
+      code: code
+    };
+    chrome.tabs.executeScript(firstTabId, scriptOptions);
+    return /* () */0;
+  } else {
+    return 0;
+  }
+}
+
 function handleChangeColorClicked($$event) {
   var clickedColor = Curry._1(getChangeColorClickedValue, $$event);
-  var queryOptions = { };
-  queryOptions["active"] = true;
-  queryOptions["currentWindow"] = true;
-  chrome.tabs.query(queryOptions, (function (tabs) {
-          if (tabs.length) {
-            var firstTabId = Caml_array.caml_array_get(tabs, 0).id;
-            var scriptOptions = { };
-            scriptOptions["code"] = "document.body.style.backgroundColor = '" + (clickedColor + "';");
-            chrome.tabs.executeScript(firstTabId, scriptOptions);
-            return /* () */0;
-          } else {
-            return 0;
-          }
+  var queryOptions = {
+    active: true,
+    currentWindow: true
+  };
+  chrome.tabs.query(queryOptions, (function (param) {
+          return setCurrentActiveWindowColor(clickedColor, param);
         }));
   return /* () */0;
 }
 
 chrome.storage.sync.get("color", (function (data) {
         var color = data.color;
-        Curry._3(Element$ChromeExtn.addEventListener, Curry._3(Element$ChromeExtn.setAttribute, Curry._3(Element$ChromeExtn.setStyle, changeColor, "backgroundColor", color), "value", color), "click", handleChangeColorClicked);
+        Curry._3(Element$ChromeExtn.addEventListener, Curry._3(Element$ChromeExtn.setAttribute, Curry._3(Element$ChromeExtn.setStyle, document.getElementById("changeColor"), "backgroundColor", color), "value", color), "click", handleChangeColorClicked);
         return /* () */0;
       }));
 
-exports.changeColor = changeColor;
 exports.getChangeColorClickedValue = getChangeColorClickedValue;
+exports.setCurrentActiveWindowColor = setCurrentActiveWindowColor;
 exports.handleChangeColorClicked = handleChangeColorClicked;
-/* changeColor Not a pure module */
+/* getChangeColorClickedValue Not a pure module */
