@@ -5,24 +5,28 @@
 var setStyle = (
   function(element, styleKey, styleVal) {
     element.style[styleKey] = styleVal;
+    return element;
   }
 );
 
 var setAttribute = (
   function(element, attr, val) {
     element.setAttribute(attr, val);
+    return element;
   }
 );
 
 var addEventListener = (
   function(element, eventName, listener) {
     element.addEventListener(eventName, listener);
+    return element;
   }
 );
 
 var appendChild = (
   function(element, child) {
     element.appendChild(child);
+    return element;
   }
 );
 

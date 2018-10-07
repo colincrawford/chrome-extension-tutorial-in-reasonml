@@ -3,7 +3,7 @@
 
 var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
-var Element$ReactTemplate = require("./Element.bs.js");
+var Element$ChromeExtn = require("./Element.bs.js");
 
 var page = document.getElementById("buttonDiv");
 
@@ -25,12 +25,10 @@ function updateChromeStorageColor(color, _) {
 }
 
 $$Array.iter((function (color) {
-        var button = document.createElement("button");
-        Curry._3(Element$ReactTemplate.setStyle, button, "backgroundColor", color);
-        Curry._3(Element$ReactTemplate.addEventListener, button, "click", (function (param) {
-                return updateChromeStorageColor(color, param);
-              }));
-        return Curry._2(Element$ReactTemplate.appendChild, page, button);
+        Curry._2(Element$ChromeExtn.appendChild, page, Curry._3(Element$ChromeExtn.addEventListener, Curry._3(Element$ChromeExtn.setStyle, document.createElement("button"), "backgroundColor", color), "click", (function (param) {
+                    return updateChromeStorageColor(color, param);
+                  })));
+        return /* () */0;
       }), kButtonColors);
 
 exports.page = page;

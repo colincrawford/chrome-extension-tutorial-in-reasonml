@@ -10,23 +10,9 @@ var Sync = /* module */[];
 
 var Storage = /* module */[/* Sync */Sync];
 
-var makeNewPageStateManager = (
-    function(hostEquals) {
-      return new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals}
-      });
-    }
-    );
-
-var makeNewShowPageAction = ( function() { return new chrome.declarativeContent.ShowPageAction() });
-
 var OnPageChanged = /* module */[];
 
-var DeclarativeContent = /* module */[
-  /* makeNewPageStateManager */makeNewPageStateManager,
-  /* makeNewShowPageAction */makeNewShowPageAction,
-  /* OnPageChanged */OnPageChanged
-];
+var DeclarativeContent = /* module */[/* OnPageChanged */OnPageChanged];
 
 var Tabs = /* module */[];
 
@@ -34,4 +20,4 @@ exports.Runtime = Runtime;
 exports.Storage = Storage;
 exports.DeclarativeContent = DeclarativeContent;
 exports.Tabs = Tabs;
-/* makeNewPageStateManager Not a pure module */
+/* No side effect */

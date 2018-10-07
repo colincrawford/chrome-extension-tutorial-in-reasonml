@@ -3,7 +3,7 @@
 
 var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
-var Element$ReactTemplate = require("./Element.bs.js");
+var Element$ChromeExtn = require("./Element.bs.js");
 
 var changeColor = document.getElementById("changeColor");
 
@@ -34,9 +34,8 @@ function handleChangeColorClicked($$event) {
 
 chrome.storage.sync.get("color", (function (data) {
         var color = data.color;
-        Curry._3(Element$ReactTemplate.setStyle, changeColor, "backgroundColor", color);
-        Curry._3(Element$ReactTemplate.setAttribute, changeColor, "value", color);
-        return Curry._3(Element$ReactTemplate.addEventListener, changeColor, "click", handleChangeColorClicked);
+        Curry._3(Element$ChromeExtn.addEventListener, Curry._3(Element$ChromeExtn.setAttribute, Curry._3(Element$ChromeExtn.setStyle, changeColor, "backgroundColor", color), "value", color), "click", handleChangeColorClicked);
+        return /* () */0;
       }));
 
 exports.changeColor = changeColor;
