@@ -5,17 +5,17 @@ type storageData = {color: string};
 module Runtime = {
   module OnInstalled = {
     [@bs.val] [@bs.scope ("chrome", "runtime", "onInstalled")]
-    external addListener: (unit => unit) => unit = "addListener";
+    external addListener: (unit => unit) => unit = "";
   };
 };
 
 module Storage = {
   module Sync = {
     [@bs.val] [@bs.scope ("chrome", "storage", "sync")]
-    external set: (storageData, unit => unit) => unit = "set";
+    external set: (storageData, unit => unit) => unit = "";
 
     [@bs.val] [@bs.scope ("chrome", "storage", "sync")]
-    external get: (string, storageData => unit) => unit = "get";
+    external get: (string, storageData => unit) => unit = "";
   };
 };
 
@@ -38,7 +38,7 @@ module DeclarativeContent = {
     [@bs.val] [@bs.scope ("chrome", "declarativeContent", "onPageChanged")]
     external removeRules:
       (Js.Undefined.t(Js.Dict.t(string)), unit => unit) => unit =
-      "removeRules";
+      "";
 
     [@bs.deriving abstract]
     type rule = {
@@ -47,7 +47,7 @@ module DeclarativeContent = {
     };
 
     [@bs.val] [@bs.scope ("chrome", "declarativeContent", "onPageChanged")]
-    external addRules: array(rule) => unit = "addRules";
+    external addRules: array(rule) => unit = "";
   };
 };
 
@@ -55,9 +55,18 @@ module Tabs = {
   [@bs.deriving abstract]
   type tab = {id: int};
 
-  [@bs.val] [@bs.scope ("chrome", "tabs")]
-  external query: (Js.Dict.t(bool), array(tab) => unit) => unit = "query";
+  [@bs.deriving abstract]
+  type queryOptions = {
+    active: bool,
+    currentWindow: bool,
+  };
 
   [@bs.val] [@bs.scope ("chrome", "tabs")]
-  external executeScript: (int, Js.Dict.t(string)) => unit = "executeScript";
+  external query: (queryOptions, array(tab) => unit) => unit = "";
+
+  [@bs.deriving abstract]
+  type scriptOptions = {code: string};
+
+  [@bs.val] [@bs.scope ("chrome", "tabs")]
+  external executeScript: (int, scriptOptions) => unit = "";
 };

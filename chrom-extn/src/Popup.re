@@ -1,5 +1,3 @@
-let changeColor: Dom.element = Document.getElementById("changeColor");
-
 let getChangeColorClickedValue: Dom.event => string = [%bs.raw
   {|
   function(event) {
@@ -8,30 +6,31 @@ let getChangeColorClickedValue: Dom.event => string = [%bs.raw
 |}
 ];
 
+let setCurrentActiveWindowColor: (string, array(Chrome.Tabs.tab)) => unit =
+  (color, tabs) =>
+    if (Array.length(tabs) > 0) {
+      let firstTabId = Chrome.Tabs.idGet(tabs[0]);
+      let code = "document.body.style.backgroundColor = '" ++ color ++ "';";
+      let scriptOptions = Chrome.Tabs.scriptOptions(~code);
+      Chrome.Tabs.executeScript(firstTabId, scriptOptions);
+    };
+
 let handleChangeColorClicked: Dom.event => unit =
   event => {
     let clickedColor = getChangeColorClickedValue(event);
-    let queryOptions = Js.Dict.empty();
-    Js.Dict.set(queryOptions, "active", true);
-    Js.Dict.set(queryOptions, "currentWindow", true);
-    Chrome.Tabs.query(queryOptions, tabs =>
-      if (Array.length(tabs) > 0) {
-        let firstTabId = Chrome.Tabs.idGet(tabs[0]);
-        let scriptOptions = Js.Dict.empty();
-        Js.Dict.set(
-          scriptOptions,
-          "code",
-          "document.body.style.backgroundColor = '" ++ clickedColor ++ "';",
-        );
-        Chrome.Tabs.executeScript(firstTabId, scriptOptions);
-      }
+    let queryOptions =
+      Chrome.Tabs.queryOptions(~active=true, ~currentWindow=true);
+    Chrome.Tabs.query(
+      queryOptions,
+      setCurrentActiveWindowColor(clickedColor),
     );
   };
 
 Chrome.Storage.Sync.get("color", data => {
   let color = Chrome.colorGet(data);
   let _ =
-    Element.setStyle(changeColor, "backgroundColor", color)
+    Document.getElementById("changeColor")
+    ->Element.setStyle("backgroundColor", color)
     ->Element.setAttribute("value", color)
     ->Element.addEventListener("click", handleChangeColorClicked);
   ();
