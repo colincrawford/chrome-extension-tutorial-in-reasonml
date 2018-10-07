@@ -22,19 +22,17 @@ module Storage = {
 module DeclarativeContent = {
   type onPageChangedRule;
 
-  let makeNewPageStateManager: string => onPageChangedRule = [%bs.raw
-    {|
-    function(hostEquals) {
-      return new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals}
-      });
-    }
-    |}
-  ];
+  [@bs.deriving abstract]
+  type host = {hostEquals: string};
 
-  let makeNewShowPageAction: unit => onPageChangedRule = [%bs.raw
-    {| function() { return new chrome.declarativeContent.ShowPageAction() }|}
-  ];
+  [@bs.deriving abstract]
+  type page = {pageUrl: host};
+
+  [@bs.scope ("chrome", "declarativeContent")] [@bs.new]
+  external pageStateMatcher: page => onPageChangedRule = "PageStateMatcher";
+
+  [@bs.scope ("chrome", "declarativeContent")] [@bs.new]
+  external showPageAction: unit => onPageChangedRule = "ShowPageAction";
 
   module OnPageChanged = {
     [@bs.val] [@bs.scope ("chrome", "declarativeContent", "onPageChanged")]
@@ -42,9 +40,14 @@ module DeclarativeContent = {
       (Js.Undefined.t(Js.Dict.t(string)), unit => unit) => unit =
       "removeRules";
 
+    [@bs.deriving abstract]
+    type rule = {
+      conditions: array(onPageChangedRule),
+      actions: array(onPageChangedRule),
+    };
+
     [@bs.val] [@bs.scope ("chrome", "declarativeContent", "onPageChanged")]
-    external addRules: array(Js.Dict.t(array(onPageChangedRule))) => unit =
-      "addRules";
+    external addRules: array(rule) => unit = "addRules";
   };
 };
 
